@@ -1,0 +1,166 @@
+ report:	ok
+ id:		0
+ products:	
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+->add_type("nuts")
+ report:	ok
+ id:		0
+ products:	nuts
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+
+->add_type("NUTS")
+  report:	product type already in database
+ id:		0
+ products:	nuts
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+->add_type("bolts")
+ report:	ok
+ id:		0
+ products:	nuts,bolts
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+
+->add_type("HAMMERS")
+ report:	ok
+ id:		0
+ products:	nuts,bolts,hammers
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("bolts",100)
+ report:	ok
+ id:		0
+ products:	nuts,bolts,hammers
+ stock:		bolts->100
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("nuts",-200)
+  report:	quantity added must be positive
+ id:		0
+ products:	nuts,bolts,hammers
+ stock:		bolts->100
+ orders:	
+ carts:		
+ order_state:	
+->add_order(<<["nuts", 25], ["bolts", 15]>>)
+  report:	not enough in stock
+ id:		0
+ products:	nuts,bolts,hammers
+ stock:		bolts->100
+ orders:	
+ carts:		
+ order_state:	
+->invoice(-1)
+  report:	order id is not valid
+ id:		0
+ products:	nuts,bolts,hammers
+ stock:		bolts->100
+ orders:	
+ carts:		
+ order_state:	
+->add_product("hammers",12)
+ report:	ok
+ id:		0
+ products:	nuts,bolts,hammers
+ stock:		bolts->100,hammers->12
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["bolts", 5], ["hammers", 1]>>)
+ report:	ok
+ id:		1
+ products:	nuts,bolts,hammers
+ stock:		bolts->95,hammers->11
+ orders:	1
+ carts:		1:bolts->5,hammers->1
+ order_state:	1->pending
+
+->cancel_order(1)
+ report:	ok
+ id:		1
+ products:	nuts,bolts,hammers
+ stock:		bolts->100,hammers->12
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["hammers", 10], ["bolts", 95], ["nuts", 140]>>)
+  report:	not enough in stock
+ id:		1
+ products:	nuts,bolts,hammers
+ stock:		bolts->100,hammers->12
+ orders:	
+ carts:		
+ order_state:	
+->add_product("nuts",2000)
+ report:	ok
+ id:		1
+ products:	nuts,bolts,hammers
+ stock:		bolts->100,hammers->12,nuts->2000
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("hammers",7)
+ report:	ok
+ id:		1
+ products:	nuts,bolts,hammers
+ stock:		bolts->100,hammers->19,nuts->2000
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["hammers", 1], ["bolts", 1], ["nuts", 9]>>)
+ report:	ok
+ id:		1
+ products:	nuts,bolts,hammers
+ stock:		bolts->99,hammers->18,nuts->1991
+ orders:	1
+ carts:		1:hammers->1,bolts->1,nuts->9
+ order_state:	1->pending
+
+->add_order(<<["hammers", 2], ["nuts", 10]>>)
+ report:	ok
+ id:		2
+ products:	nuts,bolts,hammers
+ stock:		bolts->99,hammers->16,nuts->1981
+ orders:	1,2
+ carts:		1:hammers->1,bolts->1,nuts->9
+		2:hammers->2,nuts->10
+ order_state:	1->pending,2->pending
+
+->invoice(4)
+  report:	order id is not valid
+ id:		2
+ products:	nuts,bolts,hammers
+ stock:		bolts->99,hammers->16,nuts->1981
+ orders:	1,2
+ carts:		1:hammers->1,bolts->1,nuts->9
+		2:hammers->2,nuts->10
+ order_state:	1->pending,2->pending
+->invoice(1)
+ report:	ok
+ id:		2
+ products:	nuts,bolts,hammers
+ stock:		bolts->99,hammers->16,nuts->1981
+ orders:	1,2
+ carts:		1:hammers->1,bolts->1,nuts->9
+		2:hammers->2,nuts->10
+ order_state:	1->invoiced,2->pending
+

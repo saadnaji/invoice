@@ -1,0 +1,188 @@
+ report:	ok
+ id:		0
+ products:	
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+->add_type("chocolate")
+ report:	ok
+ id:		0
+ products:	chocolate
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+
+->add_type("pepsi")
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+
+->add_type("water")
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("pepsi",100)
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		pepsi->100
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("water",1005)
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		pepsi->100,water->1005
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("chocolate",191000000)
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		pepsi->100,water->1005,chocolate->191000000
+ orders:	
+ carts:		
+ order_state:	
+
+->add_product("chocolate",5)
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		pepsi->100,water->1005,chocolate->191000005
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["nuts", 29], ["bolts", 31], ["pepsi", 300]>>)
+  report:	some products in order not valid
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		pepsi->100,water->1005,chocolate->191000005
+ orders:	
+ carts:		
+ order_state:	
+->add_order(<<["waTer", 22], ["chOcoLateS", 5]>>)
+  report:	some products in order not valid
+ id:		0
+ products:	chocolate,pepsi,water
+ stock:		pepsi->100,water->1005,chocolate->191000005
+ orders:	
+ carts:		
+ order_state:	
+->add_type("chips")
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["chips", 100]>>)
+  report:	not enough in stock
+ id:		0
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005
+ orders:	
+ carts:		
+ order_state:	
+->add_product("chips",3000)
+ report:	ok
+ id:		0
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005,chips->3000
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["chips", 100]>>)
+ report:	ok
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005,chips->2900
+ orders:	1
+ carts:		1:chips->100
+ order_state:	1->pending
+
+->cancel_order(2)
+  report:	order id is not valid
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005,chips->2900
+ orders:	1
+ carts:		1:chips->100
+ order_state:	1->pending
+->cancel_order(4)
+  report:	order id is not valid
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005,chips->2900
+ orders:	1
+ carts:		1:chips->100
+ order_state:	1->pending
+->cancel_order(3)
+  report:	order id is not valid
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005,chips->2900
+ orders:	1
+ carts:		1:chips->100
+ order_state:	1->pending
+->cancel_order(1)
+ report:	ok
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->1005,chocolate->191000005,chips->3000
+ orders:	
+ carts:		
+ order_state:	
+
+->add_order(<<["water", 29], ["chips", 31]>>)
+ report:	ok
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->976,chocolate->191000005,chips->2969
+ orders:	1
+ carts:		1:water->29,chips->31
+ order_state:	1->pending
+
+->cancel_order(2)
+  report:	order id is not valid
+ id:		1
+ products:	chocolate,pepsi,water,chips
+ stock:		pepsi->100,water->976,chocolate->191000005,chips->2969
+ orders:	1
+ carts:		1:water->29,chips->31
+ order_state:	1->pending
+->add_type("juice")
+ report:	ok
+ id:		1
+ products:	chocolate,pepsi,water,chips,juice
+ stock:		pepsi->100,water->976,chocolate->191000005,chips->2969
+ orders:	1
+ carts:		1:water->29,chips->31
+ order_state:	1->pending
+
+->add_order(<<["juice", 29], ["chips", 31], ["pepsi", 300]>>)
+  report:	not enough in stock
+ id:		1
+ products:	chocolate,pepsi,water,chips,juice
+ stock:		pepsi->100,water->976,chocolate->191000005,chips->2969
+ orders:	1
+ carts:		1:water->29,chips->31
+ order_state:	1->pending
