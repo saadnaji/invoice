@@ -1,1 +1,54 @@
-Functions tables go here
+Invoice: THEORY
+BEGIN
+  delta: posreal % sampling time
+  IMPORTING Time[delta]
+  IMPORTING number_fields
+  i: VAR DTIME
+
+% Constants
+  n: posnat % maximum number of invoice id's
+
+% Types
+  ORDER_ID : TYPE = {id : posnat | id > 0 AND id <= n} % set of invoice order id's
+
+  PRODUCT : TYPE = STRING
+  STATUS   : TYPE = {ok, error}
+  STATE : TYPE = {pending,invoiced}
+  RESPONSE : TYPE = [DTIME -> STATUS]
+  CART_ID : TYPE = { id :posnat | id > 0}
+  QTY : TYPE = {q :posnat | q > 0}
+  
+  SET_PRODUCT: SET[PRODUCT]   % SET OF ALL PRODCUTS
+  STOCK : SET[[p: PRODUCT | p in SET_PRODUCT, q: int | q > 0]]     % A PRODUCT THAT IS IN THE SET WITH A SPECIFIED QUANTITY              
+  STOCK :TYPE [(p : PRODUCT | p in SET_PRODUCT) -> QTY] 
+  
+
+  ORDERS: TYPE = [ORDER_ID -> CART_ID]
+  CARTS : TYPE = [CART_ID -> [p: PRODUCT | p in STOCK , q : int | q > 0 AND q <= in stock]]
+  ORDER_STATE : TYPE = [ORDER_ID -> STATE]
+  
+
+% Monitored Events
+COMMAND : DATATYPE
+    BEGIN
+      nothing                                                        :isNothing?
+      add_type(product_id: STRING)                                   :isAdd_type?
+      add_product(a_product: STRING; quantity: INTEGER)              :isAdd_product? 
+      add_order (a_order: ARRAY[ TUPLE[ pid:STRING; no:INTEGER ] ] ) :isAdd_order? 
+      invoice(order_id: INTEGER)			             :isInvoice?
+      cancel_order(order_id: INTEGER)				     :isCancel_order?
+    END COMMAND 
+  cmd: VAR [DTIME -> COMMAND]
+
+% Abstract state hardest part
+ r: VAR [DTIME -> STATUS]
+ tp : VAR [DTIME -> SET_PRODUCT]+
+
+% Initial Condition
+ 
+ initial(b,s,r): bool = 
+   tp(0) = empty AND (FORALL (id : ORDER_ID) : b(0)(id) = 0) AND r(0) = ok
+
+  elem(id:int): bool =  0 < id AND id <= n
+
+
