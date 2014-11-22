@@ -120,7 +120,30 @@ feature -- commands
 feature -- queries
 	out : STRING
 		do
-			Result := " report:%T" + string_msg + "%N" + " id:%T%T" + order_id.get_OrderID.out + "%N" +" products:%T" + types_out +"%N" + " stock:%T%T" +stock_out + "%N" + " orders:%T" + orders_out + "%N" +" carts:%T%T" + carts_out + " order_state:%T" +order_state_out + "%N"
+--			Result := " report:%T" + string_msg + "%N" + " id:%T%T" + order_id.get_OrderID.out + "%N" +" products:%T" + types_out +"%N" + " stock:%T%T" +stock_out + "%N" + " orders:%T" + orders_out + "%N" +" carts:%T%T" + carts_out + " order_state:%T" +order_state_out + "%N"
+
+			io.put_string (" report:%T" + string_msg + "%N")
+			io.put_string (" id:%T%T")
+			io.put_string (order_id.get_OrderID.out)
+			io.put_new_line
+			io.put_string (" products:%T")
+			types_out
+			io.put_new_line
+			io.put_string (" stock:%T%T")
+			stock_out
+			io.put_new_line
+			io.put_string (" orders:%T")
+			orders_out
+			io.put_new_line
+			io.put_string (" carts:%T%T")
+			carts_out
+			io.put_new_line
+			io.put_string (" order_state:%T")
+			order_state_out
+--			io.put_new_line
+			Result := ""
+
+
 
 		end
 
@@ -136,33 +159,44 @@ feature -- queries
 		string_msg ~ str
    end
 
-   types_out : STRING
+   types_out
    	local
    		i : INTEGER
-   		string : STRING
+--   		string : STRING
    		do
-   			string := ""
+--   			string := ""
+--   			if not types.is_empty then
+--   				from
+--   					i := 1
+--   				until
+--   					i  > types.count -1
+--   				loop
+--   					string := string + types[i].out +","
+--   					i := i + 1
+--   				end
+--   			string := string +  types[types.count]
+--   			end
+--   			Result := string
+
    			if not types.is_empty then
    				from
    					i := 1
    				until
    					i  > types.count -1
    				loop
-   					string := string + types[i].out +","
+   					io.put_string (types[i].out +",")
    					i := i + 1
    				end
-   			string := string +  types[types.count]
+   			io.put_string (types[types.count])
    			end
-   			Result := string
    		end
 
-   stock_out : STRING
+   stock_out
    local
    		i : INTEGER
-   		string : STRING
    		array : ARRAY[STRING]
    		do
-   			string := ""
+
    			if not stock.is_empty then
    				array := stock.current_keys
    				from
@@ -172,26 +206,28 @@ feature -- queries
    				loop
    					check attached stock[array[i]]as value then
    						if not value.is_zero  then
-   							string := string + value.out +","
+--   							string := string + value.out +","
+   							io.put_string ( value.out +",")
    						end
    				 	end
    				i := i + 1
    				end
    				check attached stock[array[array.count]] as last_val then
    					if not last_val.is_zero then
-   						string := string + last_val.out
+--   						string := string + last_val.out
+							io.put_string ( last_val.out)
    					end
    			end
    			end
-   			result := string
+--   			result := ""
    		end
-   	orders_out : STRING
+   	orders_out
    		local
    			i : INTEGER
-   			string : STRING
+--   			string : STRING
    			keys : ARRAY[INTEGER]
    		do
-   			string := ""
+--   			string := ""
    			if not cart.is_empty then
    				keys := cart.current_keys
 				from
@@ -199,60 +235,67 @@ feature -- queries
 				until
 					i > keys.count - 1
 				loop
-					string := string + keys[i].out + ","
+--					string := string + keys[i].out + ","
+					io.put_string (keys[i].out + ",")
 					i := i + 1
 				end
-				string := string + keys[keys.count].out
+--				string := string + keys[keys.count].out
+				io.put_string (keys[keys.count].out)
    			end
-			result := string
+--			result := string
 
    		end
 
-   	carts_out : STRING
+   	carts_out
    		local
    			i: INTEGER
-   			string : STRING
+--   			string : STRING
    			keys : ARRAY[INTEGER]
    		do
-   			string := "%N"
+--   			string := "%N" -- check this why it need new line
    			if not cart.is_empty then
-   				string := ""
+--   				string := ""
    				keys := cart.current_keys
    				from
    					i := keys.lower
    				until
    					i > keys.count
    				loop
-   					string := string +keys[i].out + ":"
+--   					string := string +keys[i].out + ":"
+						io.put_string (keys[i].out + ":")
    					check attached cart[keys[i]] as tuple then	-- this visits and check if tuple is attached
    						check attached tuple.li_pr as pr_li then -- this check if list of products is attached
    							if pr_li.count > 1 then
-   								across 1 |..| (pr_li.count-1) as  j loop string := string + pr_li.at(j.item).out +","   end -- concat all the products for this key	
+--   								across 1 |..| (pr_li.count-1) as  j loop string := string + pr_li.at(j.item).out +","   end -- concat all the products for this key	
+									across 1 |..| (pr_li.count-1) as  j loop  io.put_string (pr_li.at(j.item).out +",")   end -- concat all the products for this key	
    							end
 
-							string := string + pr_li.last.out
+--							string := string + pr_li.last.out
+							io.put_string (pr_li.last.out)
    						end
 
    					end
    					if  i  < keys.count then
-   						string := string + "%N%T%T"
+--   						string := string + "%N%T%T"
+   						io.put_string ("%N%T%T")
    					end
-   					if  i  = keys.count then
-   						string := string + "%N"
-   					end
+--   					if  i  = keys.count then
+--   						io.put_string ("%N")
+----   						string := string + "%N"
+--   					end
 
    					i := i + 1
    				end
    			end
-		Result := string
+--		Result := ""
    		end
-   	order_state_out: STRING
+   	order_state_out
    	 	local
    			i: INTEGER
-   			string : STRING
+--   			string : STRING
    			keys : ARRAY[INTEGER]
    		do
-   			string := ""
+--   			string := ""
    			if not  cart.is_empty  then
    				keys := cart.current_keys
    				from
@@ -261,15 +304,17 @@ feature -- queries
    					i > keys.count - 1
    				loop
 					check attached  cart[keys[i]] as tuple then
-						string :=  string + keys[i].out + "->" + tuple.state +","
+--						string :=  string + keys[i].out + "->" + tuple.state +","
+						io.put_string (keys[i].out + "->" + tuple.state +",")
 					end
 					i := i + 1
    				end
    				check attached cart[keys[keys.count]] as last_tuple then -- cart's last tuple
-   					string :=  string + keys[keys.count].out + "->" +last_tuple.state
+--   					string :=  string + keys[keys.count].out + "->" +last_tuple.state
+   						io.put_string ( keys[keys.count].out + "->" +last_tuple.state)
    				end
    			end
-			result := string
+--			result := ""
    		end
 
 

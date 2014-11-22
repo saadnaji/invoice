@@ -49,11 +49,14 @@ feature -- Log to 'output'
 		do
 			l_command_name := "->" + a_cmd.out + "%N"
 			if a_cmd.message.count = 0 then
-
-				output := output + l_command_name
+--				io.put_string ("IF helloooooooooooooooooooo")
+--				output := output + l_command_name
+					io.put_string (l_command_name)
+					io.put_string (model_state)
 				-- also append model state to 'output'
-				output.append (model_state)
+--				output.append (model_state)
 			else
+--				io.put_string ("helloooooooooooooooooooo")
 				output := output + l_command_name + " " + a_cmd.message
 			end
 		end
