@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 			create types.make(10000)
 			create stock.make(10000)
 			create order_id.make
+			create sort.make
 			string_msg := "ok"
 			init := false
 			cart.compare_objects
@@ -38,11 +39,14 @@ feature -- commands
 			not_in_db : not types.has (to_lower_s(type))
 		do
 			types.extend (type)
+			sort.sort_strings (types)
 		ensure
 			size_in:types.count = old types.count + 1
 			added: types.has (to_lower_s(type))
 
 		end
+
+
 	add_product(a_product:STRING; quantity:INTEGER)
 		require
 			string_not_empty : not a_product.is_empty
@@ -78,6 +82,9 @@ feature -- commands
 		across a_array as  a loop
 			check attached stock[a.item.p_id] as r  then
 				r.deduct_stock (a.item.quantity)
+				if r.is_zero then -- new thing added , if prod quan is zero then remove it from stock
+					stock.remove (a.item.p_id)
+				end
 			end
 		end
 		create prod_arr.make (a_array.count)
@@ -86,6 +93,7 @@ feature -- commands
 	ensure
 		order_added : cart.count = old cart.count + 1
 --		stocks_dec : across a_array as  a some  i  attached stock[a.item.p_id] as r implies  r.getQuantity = old r.getQuantity - a.item.quantity  end
+
 	end
 
 	invoice( id : INTEGER)
@@ -108,9 +116,14 @@ feature -- commands
 	do
 		check  attached cart[id] as tuple then -- check if tuple is attached
 			across tuple.li_pr as a  loop -- loop over the product list
-					check attached 	stock[a.item.getProductName] as p_stock then -- check if the product in stock aka inventory is attached
-						p_stock.add_stock (a.item.getquantity)
+					if stock.has (a.item.getProductName) then
+						check attached 	stock[a.item.getProductName] as p_stock then -- check if the product in stock aka inventory is attached
+							p_stock.add_stock (a.item.getquantity)
+						end
+					else
+						stock.extend (a.item,a.item.getProductName)
 					end
+
 			end
 		end
 		cart.remove (id) -- remove from cart so now id along with its order are removed
@@ -122,7 +135,10 @@ feature -- queries
 	out : STRING
 		do
 --			Result := " report:%T" + string_msg + "%N" + " id:%T%T" + order_id.get_OrderID.out + "%N" +" products:%T" + types_out +"%N" + " stock:%T%T" +stock_out + "%N" + " orders:%T" + orders_out + "%N" +" carts:%T%T" + carts_out + " order_state:%T" +order_state_out + "%N"
-
+			----------sort--------------
+			stock := sort.sort_stock (stock) -- check here
+			sort.sort_prod (cart)
+			------------------------------------------------
 			io.put_string (" report:%T" + string_msg + "%N")
 			io.put_string (" id:%T%T")
 			io.put_string (order_id.get_OrderID.out)
@@ -169,19 +185,6 @@ feature -- queries
    		i : INTEGER
 --   		string : STRING
    		do
---   			string := ""
---   			if not types.is_empty then
---   				from
---   					i := 1
---   				until
---   					i  > types.count -1
---   				loop
---   					string := string + types[i].out +","
---   					i := i + 1
---   				end
---   			string := string +  types[types.count]
---   			end
---   			Result := string
 
    			if not types.is_empty then
    				from
@@ -210,18 +213,18 @@ feature -- queries
    					i > array.count - 1
    				loop
    					check attached stock[array[i]]as value then
-   						if not value.is_zero  then
+--   						if not value.is_zero  then
 --   							string := string + value.out +","
    							io.put_string ( value.out +",")
-   						end
+--   						end
    				 	end
    				i := i + 1
    				end
    				check attached stock[array[array.count]] as last_val then
-   					if not last_val.is_zero then
+--   					if not last_val.is_zero then
 --   						string := string + last_val.out
 							io.put_string ( last_val.out)
-   					end
+--   					end
    			end
    			end
 --   			result := ""
@@ -267,7 +270,7 @@ feature -- queries
    					i > keys.count
    				loop
 --   					string := string +keys[i].out + ":"
-						io.put_string (keys[i].out + ":")
+						io.put_string (keys[i].out + ": ")
    					check attached cart[keys[i]] as tuple then	-- this visits and check if tuple is attached
    						check attached tuple.li_pr as pr_li then -- this check if list of products is attached
    							if pr_li.count > 1 then
@@ -398,8 +401,9 @@ feature -- helpers routines
 feature -- class helpers
 order_id : ORDER_ID
 string_msg : STRING
+sort : SORT
 feature --attribtes
-cart:  HASH_TABLE[TUPLE[ li_pr:LIST[PRODUCT]; state :STRING],INTEGER]
+cart:  HASH_TABLE[TUPLE[ li_pr:ARRAYED_LIST[PRODUCT]; state :STRING],INTEGER]
 types : ARRAYED_LIST[STRING]
 stock : HASH_TABLE[PRODUCT,STRING]
 init : BOOLEAN

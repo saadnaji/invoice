@@ -83,16 +83,16 @@ feature -- make
 
 	getQuantity : INTEGER
 	do
-		Result := product.quan.twin
+		Result := product.quan
 	ensure
-		Result = product.quan.twin
+		Result = product.quan
 	end
 
 	getProductName : STRING
 	do
-		Result := product.prod.twin
+		Result := product.prod
 	ensure
-		Result = product.prod.twin
+		Result = product.prod
 	end
 
 	out : STRING
