@@ -30,15 +30,15 @@ feature
 						orders.add_product (a_product, quantity)
 					else
 						orders.alert_msg( "product not in database")
-						message := orders.out
+--						message := orders.out
 					end
 				else
 					orders.alert_msg( "product not in database")
-					message := orders.out
+--					message := orders.out
 				end
 			else
 				orders.alert_msg("quantity added must be positive")
-				message := orders.out
+--				message := orders.out
 			end
 			container.on_change.notify ([Current])
 		end

@@ -27,11 +27,11 @@ feature
 					orders.add_type (product_id)
 				else
 					orders.alert_msg("product type already in database")
-					message := orders.out
+--					message := orders.out
 				end
 			else
 				orders.alert_msg("product type must be non-empty string")
-				message := orders.out
+--				message := orders.out
 			end
 			container.on_change.notify ([Current])
 		end

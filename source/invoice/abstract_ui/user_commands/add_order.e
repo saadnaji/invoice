@@ -31,11 +31,11 @@ feature
 									orders.add_order (a_order)
 								else
 									orders.alert_msg("not enough in stock")
-									message := orders.out
+--									message := orders.out
 								end
 							else
 								orders.alert_msg( "duplicate products in order array")
-								message := orders.out
+--								message := orders.out
 							end
 						else
 							if  a_order.for_all (agent prd_name_exists(?)) then
@@ -44,19 +44,19 @@ feature
 								orders.alert_msg("some products in order not valid")
 							end
 
-							message := orders.out
+--							message := orders.out
 						end
 					else
 						orders.alert_msg( "quantity added must be positive")
-						message := orders.out
+--						message := orders.out
 					end
 				else
 					orders.alert_msg( "cart must be non-empty")
-					message := orders.out
+--					message := orders.out
 				end
 			else
 				orders.alert_msg( "no more order ids left")
-				message := orders.out
+--				message := orders.out
 			end
 			container.on_change.notify ([Current])
 		end

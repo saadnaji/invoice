@@ -36,8 +36,11 @@ feature -- queries
 		end
 
 	initial_state : STRING
+	local
 		do
+
 			Result := model.out
+--			Result := ""
 		end
 
 feature -- Log to 'output'

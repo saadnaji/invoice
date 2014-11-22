@@ -26,7 +26,7 @@ feature
 				orders.cancel_order (order_id)
 			else
 				orders.alert_msg("order id is not valid")
-				message := orders.out
+--				message := orders.out
 			end
 			container.on_change.notify ([Current])
 		end

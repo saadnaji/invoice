@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			create stock.make(10000)
 			create order_id.make
 			string_msg := "ok"
+			init := false
 			cart.compare_objects
 			types.compare_objects
 			stock.compare_objects
@@ -140,7 +141,11 @@ feature -- queries
 			io.put_new_line
 			io.put_string (" order_state:%T")
 			order_state_out
---			io.put_new_line
+
+			if not init then
+				io.put_new_line
+			end
+			init := true
 			Result := ""
 
 
@@ -397,7 +402,7 @@ feature --attribtes
 cart:  HASH_TABLE[TUPLE[ li_pr:LIST[PRODUCT]; state :STRING],INTEGER]
 types : ARRAYED_LIST[STRING]
 stock : HASH_TABLE[PRODUCT,STRING]
-
+init : BOOLEAN
 
 
 end

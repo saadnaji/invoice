@@ -29,15 +29,15 @@ feature
 						orders.invoice (order_id)
 					else
 						orders.alert_msg("order already invoiced")
-						message := orders.out
+--						message := orders.out
 					end
 				else
 					orders.alert_msg("order already invoiced")
-					message := orders.out
+--					message := orders.out
 				end
 			else
 				orders.alert_msg("order id is not valid")
-				message := orders.out
+--				message := orders.out
 			end
 			container.on_change.notify ([Current])
 		end
