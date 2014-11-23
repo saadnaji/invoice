@@ -21,6 +21,7 @@ feature {NONE} -- Initialization
 			create cart.make (10000)
 			create types.make(10000)
 			create stock.make(10000)
+			create unordered_id.make(10000)
 			create order_id.make
 			create sort.make
 			string_msg := "ok"
@@ -79,6 +80,7 @@ feature -- commands
 	local
 		prod_arr : ARRAYED_LIST[PRODUCT]
 	do
+
 		across a_array as  a loop
 			check attached stock[a.item.p_id] as r  then
 				r.deduct_stock (a.item.quantity)
@@ -90,6 +92,9 @@ feature -- commands
 		create prod_arr.make (a_array.count)
 		across a_array as  a loop prod_arr.extend (create {PRODUCT}.make_from_tuple(a.item)) end
 		cart.extend ([prod_arr,"pending"],order_id.generate_id)
+		-- add unordered id
+		unordered_id.extend (order_id.get_orderid)
+
 	ensure
 		order_added : cart.count = old cart.count + 1
 --		stocks_dec : across a_array as  a some  i  attached stock[a.item.p_id] as r implies  r.getQuantity = old r.getQuantity - a.item.quantity  end
@@ -128,13 +133,14 @@ feature -- commands
 		end
 		cart.remove (id) -- remove from cart so now id along with its order are removed
 		order_id.add_to_list (id) -- add to the id list so that it can be re used again
+		---------- remove also from unordered lisr
+		unordered_id := remove_from_unordered ( id , unordered_id)
 	ensure
 		id_removed : not cart.has (id)
 	end
 feature -- queries
 	out : STRING
 		do
---			Result := " report:%T" + string_msg + "%N" + " id:%T%T" + order_id.get_OrderID.out + "%N" +" products:%T" + types_out +"%N" + " stock:%T%T" +stock_out + "%N" + " orders:%T" + orders_out + "%N" +" carts:%T%T" + carts_out + " order_state:%T" +order_state_out + "%N"
 			----------sort--------------
 			stock := sort.sort_stock (stock) -- check here
 			sort.sort_prod (cart)
@@ -183,7 +189,6 @@ feature -- queries
    types_out
    	local
    		i : INTEGER
---   		string : STRING
    		do
 
    			if not types.is_empty then
@@ -213,116 +218,104 @@ feature -- queries
    					i > array.count - 1
    				loop
    					check attached stock[array[i]]as value then
---   						if not value.is_zero  then
---   							string := string + value.out +","
    							io.put_string ( value.out +",")
---   						end
    				 	end
    				i := i + 1
    				end
    				check attached stock[array[array.count]] as last_val then
---   					if not last_val.is_zero then
---   						string := string + last_val.out
 							io.put_string ( last_val.out)
---   					end
+
    			end
    			end
---   			result := ""
+
    		end
    	orders_out
    		local
    			i : INTEGER
---   			string : STRING
    			keys : ARRAY[INTEGER]
    		do
---   			string := ""
+
    			if not cart.is_empty then
-   				keys := cart.current_keys
 				from
 					i := 1
 				until
-					i > keys.count - 1
+					i > unordered_id.count - 1
 				loop
---					string := string + keys[i].out + ","
-					io.put_string (keys[i].out + ",")
+
+					io.put_string (unordered_id.at(i).out + ",")
 					i := i + 1
 				end
---				string := string + keys[keys.count].out
-				io.put_string (keys[keys.count].out)
+
+				io.put_string (unordered_id.at(unordered_id.count).out)
    			end
---			result := string
+
 
    		end
 
    	carts_out
    		local
    			i: INTEGER
---   			string : STRING
    			keys : ARRAY[INTEGER]
+   			cursor : like cart.new_cursor
    		do
---   			string := "%N" -- check this why it need new line
+
    			if not cart.is_empty then
---   				string := ""
-   				keys := cart.current_keys
+
    				from
-   					i := keys.lower
+   					i := 1
+
    				until
-   					i > keys.count
+   					i > unordered_id.count
+
    				loop
---   					string := string +keys[i].out + ":"
-						io.put_string (keys[i].out + ": ")
-   					check attached cart[keys[i]] as tuple then	-- this visits and check if tuple is attached
+
+						io.put_string (unordered_id.at (i).out + ": ")
+   					check attached cart[unordered_id.at (i)] as tuple then	-- this visits and check if tuple is attached
    						check attached tuple.li_pr as pr_li then -- this check if list of products is attached
    							if pr_li.count > 1 then
---   								across 1 |..| (pr_li.count-1) as  j loop string := string + pr_li.at(j.item).out +","   end -- concat all the products for this key	
 									across 1 |..| (pr_li.count-1) as  j loop  io.put_string (pr_li.at(j.item).out +",")   end -- concat all the products for this key	
    							end
 
---							string := string + pr_li.last.out
+
 							io.put_string (pr_li.last.out)
    						end
 
    					end
-   					if  i  < keys.count then
---   						string := string + "%N%T%T"
+   					if  i  <  unordered_id.count then
+
    						io.put_string ("%N%T%T")
    					end
---   					if  i  = keys.count then
---   						io.put_string ("%N")
-----   						string := string + "%N"
---   					end
+
 
    					i := i + 1
    				end
-   			end
---		Result := ""
+
+
+   		  end
+
    		end
    	order_state_out
    	 	local
    			i: INTEGER
---   			string : STRING
    			keys : ARRAY[INTEGER]
    		do
---   			string := ""
+
    			if not  cart.is_empty  then
-   				keys := cart.current_keys
    				from
    					i := 1
    				until
-   					i > keys.count - 1
+   					i >  unordered_id.count - 1
    				loop
-					check attached  cart[keys[i]] as tuple then
---						string :=  string + keys[i].out + "->" + tuple.state +","
-						io.put_string (keys[i].out + "->" + tuple.state +",")
+					check attached  cart[ unordered_id.at (i)] as tuple then
+						io.put_string ( unordered_id.at (i).out + "->" + tuple.state +",")
 					end
 					i := i + 1
    				end
-   				check attached cart[keys[keys.count]] as last_tuple then -- cart's last tuple
---   					string :=  string + keys[keys.count].out + "->" +last_tuple.state
-   						io.put_string ( keys[keys.count].out + "->" +last_tuple.state)
+   				check attached cart[ unordered_id.at (unordered_id.count)] as last_tuple then -- cart's last tuple
+
+   						io.put_string ( unordered_id.at (unordered_id.count).out + "->" +last_tuple.state)
    				end
    			end
---			result := ""
    		end
 
 
@@ -397,6 +390,32 @@ feature -- helpers routines
 
 	 end
 
+	 remove_from_unordered ( id : INTEGER ; un_id : ARRAYED_LIST[INTEGER]) : ARRAYED_LIST[INTEGER]
+	 require
+	 	un_id.has (id)
+	 local
+	 	i : INTEGER
+	 	temp : ARRAYED_LIST[INTEGER]
+	 do
+	 	create temp.make (10000)
+	 	from
+	 		i := 1
+	 	until
+	 		i > un_id.count
+	 	loop
+			if not (un_id.at (i) = id) then
+				temp.extend (un_id.at (i))
+			end
+
+			i:= i+1
+
+	 	end
+			Result := temp
+	ensure
+		not result.has (id)
+		result.count = un_id.count - 1
+	 end
+
 --		not_duplicate
 feature -- class helpers
 order_id : ORDER_ID
@@ -404,6 +423,7 @@ string_msg : STRING
 sort : SORT
 feature --attribtes
 cart:  HASH_TABLE[TUPLE[ li_pr:ARRAYED_LIST[PRODUCT]; state :STRING],INTEGER]
+unordered_id : ARRAYED_LIST[INTEGER]
 types : ARRAYED_LIST[STRING]
 stock : HASH_TABLE[PRODUCT,STRING]
 init : BOOLEAN
