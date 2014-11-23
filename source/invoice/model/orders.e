@@ -145,23 +145,23 @@ feature -- queries
 			stock := sort.sort_stock (stock) -- check here
 			sort.sort_prod (cart)
 			------------------------------------------------
-			io.put_string (" report:%T" + string_msg + "%N")
-			io.put_string (" id:%T%T")
+			io.put_string ("  report:      " + string_msg + "%N")
+			io.put_string ("  id:          ")
 			io.put_string (order_id.get_OrderID.out)
 			io.put_new_line
-			io.put_string (" products:%T")
+			io.put_string ("  products:   ")
 			types_out
 			io.put_new_line
-			io.put_string (" stock:%T%T")
+			io.put_string ("  stock:       ")
 			stock_out
 			io.put_new_line
-			io.put_string (" orders:%T")
+			io.put_string ("  orders:      ")
 			orders_out
 			io.put_new_line
-			io.put_string (" carts:%T%T")
+			io.put_string ("  carts:       ")
 			carts_out
 			io.put_new_line
-			io.put_string (" order_state:%T")
+			io.put_string ("  order_state: ")
 			order_state_out
 
 			if not init then
@@ -192,6 +192,7 @@ feature -- queries
    		do
 
    			if not types.is_empty then
+   				io.put_string (" ")
    				from
    					i := 1
    				until
@@ -283,7 +284,7 @@ feature -- queries
    					end
    					if  i  <  unordered_id.count then
 
-   						io.put_string ("%N%T%T")
+   						io.put_string ("%N               ")
    					end
 
 
