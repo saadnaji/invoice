@@ -76,7 +76,7 @@ feature -- commands
 		a_array.for_all (agent order_quantity_pos(?))
 		array_not_empty : not a_array.is_empty
 		no_dup_orders : no_duplicate_orders(a_array)
-		id_not_full :  order_id.get_orderid <= 10000
+		not_no_more_id :  not order_id.no_more_id
 	local
 		prod_arr : ARRAYED_LIST[PRODUCT]
 	do

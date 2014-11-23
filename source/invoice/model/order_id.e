@@ -20,7 +20,7 @@ feature {NONE} -- make
 feature
 	generate_id : INTEGER
 	require
-		not_max : counter <= 10000
+		not_max : counter < 10000
 	do
 		if(available.is_empty) then
 			counter := counter + 1
@@ -34,12 +34,12 @@ feature
 	ensure
 		available.is_empty implies Result = id or not available.has (Result)
 		not available.is_empty implies Result /= id
-		id <= 10000
+		Result <= 10000
 	end
 
 	add_to_list(order_id : INTEGER)
 	require
-		greater_than_zero: order_id >= 0
+		greater_than_zero: order_id > 0
 		not_in_list : not available.has (order_id)
 	do
 		available.put_front (order_id)
@@ -52,6 +52,11 @@ feature
 		Result := id.twin
 	ensure
 		Result ~ id.twin
+	end
+
+	no_more_id : BOOLEAN
+	do
+		Result := available.is_empty and (counter = 10000)
 	end
 
 feature  -- added routines for extended list functionality

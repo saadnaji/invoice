@@ -21,7 +21,7 @@ feature
 
 	add_order (a_order: ARRAY [TUPLE [pid: STRING; no: INTEGER]])
 		do
-			if orders.order_id.get_orderid <= 10000 then
+			if not orders.order_id.no_more_id then
 				if not a_order.is_empty then
 					if a_order.for_all (agent orders.order_quantity_pos(?)) then
 						if a_order.for_all (agent orders.order_prd_exists(?)) then -- prod
