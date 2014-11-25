@@ -1,0 +1,228 @@
+Invoicev2: THEORY
+BEGIN
+  delta: posreal % sampling time
+  IMPORTING Time[delta]
+  IMPORTING number_fields
+
+
+  
+
+% Types
+   qty : TYPE+ = {q :posnat | q > 0}
+   n : TYPE+ = {id : nat |  id <= 10000} % check here
+   orders_n : TYPE+ = {id : posnat |  id <= 10000} % check here
+   product: TYPE+
+   status : type+= { ok , error , msg1,msg2,msg3 ,msg4,msg5,msg6,msg7}
+   state : type+ = { pending , invoiced}
+
+
+
+% abstract varaible
+ STATE : TYPE =
+ [#     report : status
+	,id : n
+	,products : set[product]
+	,stock : [(products) -> nat] % check here
+	,orders: set[orders_n]
+	,carts :  [ (orders) -> set[ [product -> qty] ] ]
+	,order_state : [ (orders) -> state]
+ #]
+ st : VAR [ DTIME -> STATE ]
+
+% helper function
+emptyfun [T, U : TYPE] (x : {x : T | FALSE}) : RECURSIVE U = 
+    emptyfun(x) 
+    MEASURE (LAMBDA (x : {x : T | FALSE}): 1)
+
+int_state :  STATE =
+	  (#
+		report := ok
+		,id := 0
+		,products := emptyset
+		,stock := emptyfun
+		,orders:= emptyset
+		,carts := emptyfun
+		,order_state := emptyfun
+	  #)
+
+% 
+    
+% opetrations
+       
+ subtract [D : TYPE, R : TYPE]
+       (f : [D -> R], x : D)
+       (y : { y : D | y /= x }) : R = f( y )
+
+% Monitored Events
+
+COMMAND : DATATYPE
+    BEGIN
+      nothing                                                        :isNothing?
+      add_typep(product_id: product)                                 :isAdd_type?
+      add_product(a_product: product , quantity: integer)            :isAdd_product? 
+      add_order (a_order:  set[ [product -> integer] ]  ) 	     :isAdd_order? 
+      invoice(order_id: orders_n)			             :isInvoice? % check here with orders_n
+      cancel_order(order_id: orders_n)				     :isCancel_order?
+    END COMMAND 
+  cmd: VAR [DTIME -> COMMAND]
+
+
+add_typep(product_id : product) (st) (i : POS_DTIME) : bool =
+  cond
+	not products_(product_id) -> st(i) = (#
+						report := ok
+						,id := id_
+						,products := union(singleton(product_id),products_)
+						,stock := stock_ with [product_id := 0]
+						,orders := orders_
+						,carts := carts_
+						,order_state := order_state_
+	    			     	     #),
+	products_(product_id) ->     st(i) = st(i-1) with [ report := error]
+  endcond
+  where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+%===========================================================================================
+
+ 
+
+ add_product(a_product: product , quantity: integer) (st) (i :POS_DTIME) : bool =
+  cond
+	quantity > 0 and products_(a_product) -> st(i) = st(i-1) with [ stock := stock_ with [ a_product := quantity] , report := ok],
+	quantity <= 0 or not  products_(a_product) -> st(i) = st(i-1) with [ report := error]
+		     	 
+  endcond
+  where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+%===============================================================================================
+p : product
+add_order_ok  (a_order:  set[ [product -> qty] ]  ) (st)  ( i : DTIME) : bool =
+ forall( order : [product->qty]) : (forall(prod :product) : a_order(order) and ( ( st(i) `stock (prod)    - order(prod) >= 0) )) % check here
+
+%
+
+no_more_id(st) (i : DTIME) : bool =
+full?(st(i) `orders) % check here
+
+
+   add_order (a_order:  set[ [product -> qty] ]  ) (st) ( i :POS_DTIME) : bool =
+   cond
+	add_order_ok(a_order)(st)(i-1) and not no_more_id(st)  (i-1) ->
+								     forall( order: [product-> qty]):
+								     forall(prod: product) :
+								     exists(new_id : orders_n): % generate new id
+								     not orders_(new_id) and
+								     st(i) = st(i-1) with [
+											    report := ok,
+											    id := new_id,
+											    stock := stock_ with [ prod := (stock_(prod)) - order(prod)],
+											    orders := union(singleton(new_id),orders_),
+											    carts := carts_ with [ new_id := a_order],
+											    order_state := order_state_ with [ new_id := pending ]
+								     	     	     	  ],
+       else -> st(i) = st(i -1) with [ report := error]
+								     
+
+   endcond
+    where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+%==============================================================================================================
+
+
+invoice_ok (order_id: orders_n)  (st) ( i :POS_DTIME) : bool =
+st(i-1)`orders(order_id) and st(i-1)`order_state(order_id) = pending
+%
+order_has_state(st) : bool =
+forall (i : POS_DTIME) : ( forall ( order_id : orders_n) : st(i) `orders(order_id) implies (st(i)`order_state(order_id) = invoiced or st(i)`order_state(order_id) = pending) )
+
+invoice(order_id: orders_n)  (st) ( i :POS_DTIME) : bool =
+   cond
+	orders_(order_id) ->
+				cond
+				order_state_(order_id) = pending ->     st(i) = st(i-1) with [
+				                                        report := ok,
+								        order_state := order_state_ with [ order_id := invoiced]
+									] ,
+			        not order_state_(order_id) = pending -> st(i) = st(i-1) with [report := msg6]
+				
+				endcond,
+	not orders_(order_id) ->  st(i) = st(i-1) with [report := msg7]				
+
+
+   endcond
+   where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+%==========================================================================================================================
+
+cancel_order(order_id: orders_n) (st) ( i :POS_DTIME) : bool =
+  cond
+	orders_(order_id) ->	  forall( order: [product-> qty]):
+				  forall(prod: product) :
+				                         st(i) = st(i-1) with
+							 [
+						         report := ok,
+							 stock := stock_ with [ prod := (stock_(prod)) +  carts_(order_id)(order)],
+							 orders := remove(order_id,orders_),
+							 carts := subtract(carts_,order_id),
+							 order_state := subtract(order_state_,order_id)
+							  ],
+	not orders_(order_id) -> st(i) = st(i-1) with [ report := ok]
+  endcond
+   where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+%=====================================================================================================
+
+    nothing (st) (i : POS_DTIME) : bool =
+    st(i) = st(i-1)
+
+%====================================================================================================
+
+	Invoice_ftn (st)(product_id : product,  a_product: product , quantity: integer, a_order:  set[ [product -> qty]] ,order_id: orders_n )(st)   (i : DTIME) : bool =
+	cond
+		i = 0 -> st(0) = int_state,
+
+		i > 0 -> add_typep(product_id) (st) (i) and
+		      	 add_product(a_product,quantity) (st) (i) and
+			 add_order (a_order ) (st) ( i) and
+			 invoice_ok (order_id)  (st) ( i) and
+			 cancel_order(order_id) (st) ( i) and
+			 nothing (st) (i) 
+			  
+		         
+		 
+	endcond
+    
+END Invoicev2
