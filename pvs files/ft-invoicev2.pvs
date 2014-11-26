@@ -3,6 +3,7 @@ BEGIN
   delta: posreal % sampling time
   IMPORTING Time[delta]
   IMPORTING number_fields
+  IMPORTING structures@bags
 
 
   
@@ -62,7 +63,8 @@ COMMAND : DATATYPE
       add_product(a_product: product , quantity: integer)            :isAdd_product? 
       add_order (a_order:  set[ [product -> integer] ]  ) 	     :isAdd_order? 
       invoice(order_id: orders_n)			             :isInvoice? % check here with orders_n
-      cancel_order(order_id: orders_n)				     :isCancel_order?
+      cancel_order(order_id: orders_n)                               :isCancel_order?
+      add_order_new (a_order:  bag[ [product -> qty] ]  )            :is_add_new?
     END COMMAND 
   cmd: VAR [DTIME -> COMMAND]
 
@@ -78,7 +80,7 @@ add_typep(product_id : product) (st) (i : POS_DTIME) : bool =
 						,carts := carts_
 						,order_state := order_state_
 	    			     	     #),
-	products_(product_id) ->     st(i) = st(i-1) with [ report := error]
+	products_(product_id) ->     st(i) = st(i-1) with [ report := msg1]
   endcond
   where
 	report_ = st(i-1) `report
@@ -95,8 +97,12 @@ add_typep(product_id : product) (st) (i : POS_DTIME) : bool =
 
  add_product(a_product: product , quantity: integer) (st) (i :POS_DTIME) : bool =
   cond
-	quantity > 0 and products_(a_product) -> st(i) = st(i-1) with [ stock := stock_ with [ a_product := quantity] , report := ok],
-	quantity <= 0 or not  products_(a_product) -> st(i) = st(i-1) with [ report := error]
+	 products_(a_product) ->  cond
+					quantity > 0 -> st(i) = st(i-1) with [ stock := stock_ with [ a_product := quantity] , report := ok],
+					quantity <= 0 -> st(i) = st(i-1) with [ report := msg2]
+	 		      	  endcond,
+		     	 		             
+	not products_(a_product) -> st(i) = st(i-1) with [ report := msg3]
 		     	 
   endcond
   where
@@ -109,11 +115,18 @@ add_typep(product_id : product) (st) (i : POS_DTIME) : bool =
 	,order_state_ = st(i-1) `order_state
 
 %===============================================================================================
+dup_product  (a_order:  bag[ [product -> integer] ]  ) : bool = 
+forall(order: [product-> integer])  : exists (order_p : [product-> integer] | order_p /= order) : a_order(order) = a_order(order_p) 
+%
+ add_order_new (a_order:  bag[ [product -> qty] ]  ) (st) ( i :POS_DTIME) : bool = true
+
+
+%===================================================================================================================================
 p : product
 add_order_ok  (a_order:  set[ [product -> qty] ]  ) (st)  ( i : DTIME) : bool =
- forall( order : [product->qty]) : (forall(prod :product) : a_order(order) and ( ( st(i) `stock (prod)    - order(prod) >= 0) )) % check here
+ forall (order : [product->qty], prod :product) : a_order(order) AND st(i)`products(prod) => ( st(i) `stock (prod) - order(prod) >= 0) % check here
+% 
 
-%
 
 no_more_id(st) (i : DTIME) : bool =
 full?(st(i) `orders) % check here
