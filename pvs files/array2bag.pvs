@@ -1,0 +1,53 @@
+array2bag: THEORY
+BEGIN
+  IMPORTING structures@bags
+  delta : posreal
+  IMPORTING Time[delta]
+  PRODUCT: TYPE+
+  TUPLE : TYPE = [# p: PRODUCT, q : int #]
+  ARR_PRODUCT: TYPE = 
+    [# size : nat
+     , content : [below(size) -> TUPLE]
+     #]
+
+  @@ (a:ARR_PRODUCT, k: below(a`size)): TUPLE = a`content(k)
+  
+  dom (a: ARR_PRODUCT): TYPE = below(a`size)
+  
+  occ (x: PRODUCT, a: ARR_PRODUCT): nat
+  %=================
+
+  # [T: TYPE] (x: T, b: bag[T]): nat = count (x, b)
+  % system variables
+  products : [DTIME -> set[PRODUCT]]
+  % dummies
+  i: VAR DTIME 
+
+  valid_bag? (i)(a: ARR_PRODUCT): bool =
+    ( FORALL (m : dom(a)) : member((a@@m)`p, products(i)) )
+    AND
+    ( FORALL (m, n: dom(a)) : m /= n => (a@@m)`p /= (a@@n)`p )
+    AND
+    ( FORALL (m : dom(a)) : 0 <= (a@@m)`q ) 
+
+  array2bag (i) : [(valid_bag?(i)) -> bag[PRODUCT]]
+
+  a : VAR ARR_PRODUCT
+
+  x : VAR PRODUCT
+
+  singleton?(a) : bool = (EXISTS (x: ARR_PRODUCT ): (FORALL (y: ARR_PRODUCT): x = y))
+ 
+
+  bag_occ : AXIOM
+     valid_bag?(i)(a)
+  => x # array2bag(i)(a) = occ (x, a)
+
+  occ_lookup : AXIOM
+     valid_bag?(i)(a)
+  => FORALL (m : dom(a)): 
+        (a@@m)`q >= 1 => 
+          occ ( (a@@m)`p, a ) >= 1
+  
+
+END array2bag 
