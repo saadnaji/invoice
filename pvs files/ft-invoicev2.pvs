@@ -300,12 +300,12 @@ cancel_order(order_id: orders_n) (st) ( i :POS_DTIME) : bool =
 
 %====================================================================================================
 
-	Invoice_ftn (st)(product_id : PRODUCT,  a_product: PRODUCT , quantity: integer, a_order: ARR_PRODUCT ,order_id: orders_n )(st)   (i : DTIME) : bool =
+	Invoice_ftn (product_id : PRODUCT , quantity: integer, a_order: ARR_PRODUCT ,order_id: orders_n )(st)   (i : DTIME) : bool =
 	cond
 		i = 0 -> st(0) = int_state,
 
 		i > 0 -> add_types(product_id) (st) (i) and
-		      	 add_product(a_product,quantity) (st) (i) and
+		      	 add_product(product_id,quantity) (st) (i) and
 			 add_order (a_order ) (st) ( i) and
 			 invoice (order_id)  (st) ( i) and
 			 cancel_order(order_id) (st) ( i) and

@@ -428,9 +428,6 @@
     (nat nonempty-type-eq-decl nil naturalnumbers nil)
     (n nonempty-type-eq-decl nil Invoicev2 nil))
    nil))
- (enough_stock_TCC1 0
-  (enough_stock_TCC1-1 nil 3626401762 ("" (subtype-tcc) nil nil) nil
-   nil))
  (add_order_TCC1 0
   (add_order_TCC1-1 nil 3626314725 ("" (subtype-tcc) nil nil) nil nil))
  (add_order_TCC2 0
@@ -467,7 +464,6 @@
     (/= const-decl "boolean" notequal nil)
     (valid_bag? const-decl "bool" array2bag nil)
     (singleton_elt const-decl "T" sets nil)
-    (singleton? const-decl "bool" sets nil)
     (enough_stock const-decl "bool" Invoicev2 nil)
     (full? const-decl "bool" sets nil)
     (no_more_id const-decl "bool" Invoicev2 nil)
@@ -507,7 +503,6 @@
     (/= const-decl "boolean" notequal nil)
     (valid_bag? const-decl "bool" array2bag nil)
     (singleton_elt const-decl "T" sets nil)
-    (singleton? const-decl "bool" sets nil)
     (enough_stock const-decl "bool" Invoicev2 nil)
     (full? const-decl "bool" sets nil)
     (no_more_id const-decl "bool" Invoicev2 nil)
@@ -535,6 +530,13 @@
     (posreal nonempty-type-eq-decl nil real_types nil)
     (delta const-decl "posreal" array2bag nil)
     (POS_DTIME type-eq-decl nil Time nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (real_le_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (real_gt_is_strict_total_order name-judgement
+     "(strict_total_order?[real])" real_props nil)
+    (PRODUCT nonempty-type-decl nil array2bag nil)
     (posnat nonempty-type-eq-decl nil integers nil)
     (orders_n nonempty-type-eq-decl nil Invoicev2 nil)
     (<= const-decl "bool" reals nil)
@@ -545,7 +547,6 @@
     (/= const-decl "boolean" notequal nil)
     (valid_bag? const-decl "bool" array2bag nil)
     (singleton_elt const-decl "T" sets nil)
-    (singleton? const-decl "bool" sets nil)
     (enough_stock const-decl "bool" Invoicev2 nil)
     (full? const-decl "bool" sets nil)
     (no_more_id const-decl "bool" Invoicev2 nil)
@@ -583,7 +584,6 @@
     (full? const-decl "bool" sets nil)
     (no_more_id const-decl "bool" Invoicev2 nil)
     (singleton_elt const-decl "T" sets nil)
-    (singleton? const-decl "bool" sets nil)
     (enough_stock const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
