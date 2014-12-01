@@ -14,7 +14,7 @@ BEGIN
    orders_n : TYPE+ = {id : posnat |  id <= 10000} % check here
    product: TYPE
    e : set[PRODUCT] = emptyset
-   status : type+= { ok , error , msg1,msg2,msg3 ,msg4,msg5,msg6,msg7, msg8 , msg9 , msg10, msg11}
+   status : type+= { ok , pd_empty , ins_db, p_notDB , qty_pos, id_full , c_ntempty, p_invalid, p_dupli , nots_instock , id_inv , id_invalid}
    state : type+ = { pending , invoiced}
 
 
@@ -89,8 +89,8 @@ add_types (product_id : PRODUCT) (st) (i : POS_DTIME) : bool =
 	    			     	      	      	                                        ],
          products_(product_id) or   empty_string(product_id)   ->
 							         cond		
-									 empty_string(product_id)  -> st(i) = st(i-1) with [ report := msg1],  % prd is empty string 					
-	                                                                 products_(product_id)  -> st(i) = st(i-1) with [ report := msg2]  % prd already in db
+									 empty_string(product_id)  -> st(i) = st(i-1) with [ report := pd_empty],  % prd is empty string 					
+	                                                                 products_(product_id)  -> st(i) = st(i-1) with [ report := ins_db]  % prd already in db
 								 endcond
   endcond
   where
@@ -111,11 +111,11 @@ add_types (product_id : PRODUCT) (st) (i : POS_DTIME) : bool =
       
 	   	quantity > 0  ->  cond		
 					 products_(a_product) -> st(i) = st(i-1) with [ stock := stock_ with [ a_product := quantity] , report := ok],
-					 not products_(a_product) ->  st(i) = st(i-1) with [ report := msg3]  % products not in db
+					 not products_(a_product) ->  st(i) = st(i-1) with [ report := p_notDB]  % products not in db
 	 		      	  endcond,
 		
 		     	 		             
-	        quantity <= 0  ->  st(i) = st(i-1) with [ report := msg4]  % quantity must be positive
+	        quantity <= 0  ->  st(i) = st(i-1) with [ report := qty_pos]  % quantity must be positive
 		     	 
   endcond
   where
@@ -140,8 +140,10 @@ FORALL (m, n: dom(a)) : m /= n => (a@@m)`p /= (a@@n)`p
 quantity_pos ( i:DTIME) (a : ARR_PRODUCT) : bool =
 FORALL (m : dom(a)) : 0 <= (a@@m)`q 
 
+
 enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
- forall ( prod :PRODUCT) :  st(i)`products(prod)  =>  ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
+ forall ( prod :PRODUCT) :  st(i)`products(prod)  =>   ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
+
 
 
 
@@ -152,7 +154,7 @@ enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
   cond
   not no_more_id(st)(i-1)  ->
 			     cond
-				a_order `size  >  0 ->
+				a_order `size  >  0 -> 
 					cond
 						 valid_bag?(i-1) (a_order) ->
 						 		 	   
@@ -174,19 +176,19 @@ enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
 											    			     carts := carts_ with [ new_id :=  array2bag (i-1) (valid_bag?(i-1))],
 											    							 order_state := order_state_ with [ new_id := pending ]
 								     	     	     	  ],
-									not enough_stock ( array2bag (i-1) (valid_bag?(i-1)) )(st)(i-1) ->  st(i) = st(i-1) with [ report := msg9 ] % not enough in stock
+									not enough_stock ( array2bag (i-1) (valid_bag?(i-1)) )(st)(i-1) ->  st(i) = st(i-1) with [ report := nots_instock ] % not enough in stock
 									   endcond,
 						 not valid_bag?(i-1) (a_order) ->
 						     cond
-						        not quantity_pos (i-1) (a_order) ->  st(i) = st(i-1) with [ report := msg4 ], % quantity must be positive
+						        not quantity_pos (i-1) (a_order) ->  st(i) = st(i-1) with [ report := qty_pos ], % quantity must be positive
 
                                                         quantity_pos (i-1) (a_order)->
 							cond	
-							  not products_valid (i-1) (a_order) ->  st(i) = st(i-1) with [ report := msg7 ], % some product is not valid
+							  not products_valid (i-1) (a_order) ->  st(i) = st(i-1) with [ report := p_invalid ], % some product is not valid
 
                                                            products_valid (i-1) (a_order) ->
 								   cond
-								      not no_products_dup (i-1) (a_order) -> st(i) = st(i-1) with [ report := msg8 ]  % duplicate products
+								      not no_products_dup (i-1) (a_order) -> st(i) = st(i-1) with [ report := p_dupli ]  % duplicate products
 		                			           endcond
 
 							endcond
@@ -194,9 +196,9 @@ enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
 						     endcond
 					endcond,
 				
-			        not a_order `size  >  0  ->  st(i) = st(i-1) with [ report := msg6] % cart must be non empty
+			        not a_order `size  >  0  ->  st(i) = st(i-1) with [ report := c_ntempty] % cart must be non empty
 			     endcond,
-  no_more_id(st)(i-1) ->  st(i) = st(i-1) with [ report := msg5] %  no id are avalibe
+  no_more_id(st)(i-1) ->  st(i) = st(i-1) with [ report := id_full] %  no id are avalibe
   
   
   endcond
@@ -252,10 +254,10 @@ invoice(order_id: orders_n)  (st) ( i :POS_DTIME) : bool =
 				                                        report := ok,
 								        order_state := order_state_ with [ order_id := invoiced]
 	                  						] ,
-			         order_state_(order_id) = invoiced  -> st(i) = st(i-1) with [report := msg11]  % already invoiced
+			         order_state_(order_id) = invoiced  -> st(i) = st(i-1) with [report := id_inv]  % already invoiced
 				
 				endcond,
-	not orders_(order_id) ->  st(i) = st(i-1) with [report := msg10]	% order id not valid		
+	not orders_(order_id) ->  st(i) = st(i-1) with [report := id_invalid]	% order id not valid		
 
 
    endcond
@@ -283,7 +285,7 @@ cancel_order(order_id: orders_n) (st) ( i :POS_DTIME) : bool =
 							 carts := subtract(carts_,order_id),
 							 order_state := subtract(order_state_,order_id)
 							  ],
-	not orders_(order_id) -> st(i) = st(i-1) with [ report := msg10]  % order id not valid
+	not orders_(order_id) -> st(i) = st(i-1) with [ report := id_invalid]  % order id not valid
   endcond
    where
 	report_ = st(i-1) `report

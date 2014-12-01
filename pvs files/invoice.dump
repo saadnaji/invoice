@@ -1,3 +1,585 @@
+
+%% PVS Version 6.0 - International Allegro CL Enterprise Edition 9.0 [64-bit Linux (x86-64)] (Jan 14, 2013 3:07)
+%% 9.0 [64-bit Linux (x86-64)] (Jan 14, 2013 3:07)
+$$$Time.pvs
+Time[delta: posreal]  : THEORY
+BEGIN
+  % digital time
+  DTIME : TYPE = nat
+  init(i : DTIME) : bool = i = 0 
+
+  % psuedo, digitized real time   
+  RTIME : TYPE = {t : nnreal | (EXISTS (i : DTIME) : t = i * delta)}
+
+  % actual time
+  TIME : TYPE = nnreal
+
+  % Positive DTIME
+  POS_DTIME: TYPE = posnat
+  
+  % conversions
+  r2d(t: RTIME): DTIME = t / delta
+  d2r(i: DTIME): RTIME = i * delta
+
+  % induction on RTIME
+  induction_rtime : LEMMA
+    FORALL (p : pred[RTIME]) :
+      (p(0) 
+       AND 
+       (FORALL (t : RTIME) : p(t) => p(t + delta)))
+      =>
+      (FORALL (t : RTIME) : p(t))
+
+  % held_for is defined for negative t's so that we don't need to guard those function applications
+  % in tables. If the period of held_for covers any negative time instant, it is automatically false
+  DURATION: TYPE = nnreal
+  held_for (p : pred[TIME], d : DURATION)(t : real) : bool =
+    FORALL (x : real) : (t - d <= x AND x < t)  =>  (0 <= x AND p(x))
+
+END Time
+
+$$$Time.prf
+(Time
+ (r2d_TCC1 0
+  (r2d_TCC1-1 nil 3609773667
+   ("" (skolem 1 "t")
+    (("" (typepred "t")
+      (("" (skeep) (("" (rewrite -2) (("" (assert) nil nil)) nil))
+        nil))
+      nil))
+    nil)
+   ((RTIME type-eq-decl nil Time nil)
+    (delta formal-const-decl "posreal" Time nil)
+    (posreal nonempty-type-eq-decl nil real_types nil)
+    (> const-decl "bool" reals nil)
+    (nonneg_real nonempty-type-eq-decl nil real_types nil)
+    (* const-decl "[numfield, numfield -> numfield]" number_fields nil)
+    (numfield nonempty-type-eq-decl nil number_fields nil)
+    (= const-decl "[T, T -> boolean]" equalities nil)
+    (DTIME type-eq-decl nil Time nil)
+    (int nonempty-type-eq-decl nil integers nil)
+    (integer_pred const-decl "[rational -> boolean]" integers nil)
+    (rational nonempty-type-from-decl nil rationals nil)
+    (rational_pred const-decl "[real -> boolean]" rationals nil)
+    (nnreal type-eq-decl nil real_types nil)
+    (>= const-decl "bool" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number nonempty-type-decl nil numbers nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (nnreal_times_nnreal_is_nnreal application-judgement "nnreal"
+     real_types nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (nnreal_div_posreal_is_nnreal application-judgement "nnreal"
+     real_types nil))
+   nil))
+ (d2r_TCC1 0
+  (d2r_TCC1-1 nil 3609773667 ("" (subtype-tcc) nil nil)
+   ((boolean nonempty-type-decl nil booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (number nonempty-type-decl nil numbers nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (>= const-decl "bool" reals nil)
+    (rational_pred const-decl "[real -> boolean]" rationals nil)
+    (rational nonempty-type-from-decl nil rationals nil)
+    (integer_pred const-decl "[rational -> boolean]" integers nil)
+    (int nonempty-type-eq-decl nil integers nil)
+    (DTIME type-eq-decl nil Time nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil))
+   nil))
+ (induction_rtime_TCC1 0
+  (induction_rtime_TCC1-1 nil 3609774949 ("" (subtype-tcc) nil nil)
+   ((number nonempty-type-decl nil numbers nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (rational_pred const-decl "[real -> boolean]" rationals nil)
+    (rational nonempty-type-from-decl nil rationals nil)
+    (integer_pred const-decl "[rational -> boolean]" integers nil)
+    (int nonempty-type-eq-decl nil integers nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (>= const-decl "bool" reals nil) (DTIME type-eq-decl nil Time nil)
+    (nnreal_times_nnreal_is_nnreal application-judgement "nnreal"
+     real_types nil))
+   nil))
+ (induction_rtime_TCC2 0
+  (induction_rtime_TCC2-1 nil 3609774949
+   ("" (skeep)
+    (("" (skeep)
+      (("" (typepred "t")
+        (("" (skeep)
+          (("" (inst 1 "i + 1") (("" (assert) nil nil)) nil)) nil))
+        nil))
+      nil))
+    nil)
+   ((posreal_times_posreal_is_posreal application-judgement "posreal"
+     real_types nil)
+    (nnreal_plus_posreal_is_posreal application-judgement "posreal"
+     real_types nil)
+    (nnreal_times_nnreal_is_nnreal application-judgement "nnreal"
+     real_types nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (+ const-decl "[numfield, numfield -> numfield]" number_fields nil)
+    (nnint_plus_posint_is_posint application-judgement "posint"
+     integers nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (number nonempty-type-decl nil numbers nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (>= const-decl "bool" reals nil)
+    (nnreal type-eq-decl nil real_types nil)
+    (rational_pred const-decl "[real -> boolean]" rationals nil)
+    (rational nonempty-type-from-decl nil rationals nil)
+    (integer_pred const-decl "[rational -> boolean]" integers nil)
+    (int nonempty-type-eq-decl nil integers nil)
+    (DTIME type-eq-decl nil Time nil)
+    (= const-decl "[T, T -> boolean]" equalities nil)
+    (numfield nonempty-type-eq-decl nil number_fields nil)
+    (* const-decl "[numfield, numfield -> numfield]" number_fields nil)
+    (nonneg_real nonempty-type-eq-decl nil real_types nil)
+    (> const-decl "bool" reals nil)
+    (posreal nonempty-type-eq-decl nil real_types nil)
+    (delta formal-const-decl "posreal" Time nil)
+    (RTIME type-eq-decl nil Time nil))
+   nil))
+ (induction_rtime 0
+  (induction_rtime-1 nil 3610117969
+   ("" (skeep)
+    (("" (skeep)
+      (("" (typepred "t")
+        (("" (skeep -2)
+          (("" (replace -2)
+            (("" (typepred "i") (("" (postpone) nil nil)) nil)) nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   nil shostak))
+ (held_for_TCC1 0
+  (held_for_TCC1-1 nil 3610117928 ("" (subtype-tcc) nil nil)
+   ((boolean nonempty-type-decl nil booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (number nonempty-type-decl nil numbers nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (>= const-decl "bool" reals nil)
+    (DURATION type-eq-decl nil Time nil)
+    (real_lt_is_strict_total_order name-judgement
+     "(strict_total_order?[real])" real_props nil)
+    (real_minus_real_is_real application-judgement "real" reals nil)
+    (real_le_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil))
+   nil)))
+
+
+$$$array2bag.pvs
+array2bag: THEORY
+BEGIN
+  IMPORTING structures@bags
+  delta : posreal
+  IMPORTING Time[delta]
+  PRODUCT: TYPE+
+  TUPLE : TYPE = [# p: PRODUCT, q : int #]
+  ARR_PRODUCT: TYPE = 
+    [# size : nat
+     , content : [below(size) -> TUPLE]
+     #]
+
+  @@ (a:ARR_PRODUCT, k: below(a`size)): TUPLE = a`content(k)
+  
+  dom (a: ARR_PRODUCT): TYPE = below(a`size)
+  
+  occ (x: PRODUCT, a: ARR_PRODUCT): nat
+  %=================
+
+  # [T: TYPE] (x: T, b: bag[T]): nat = count (x, b)
+  % system variables
+  products : [DTIME -> set[PRODUCT]]
+  % dummies
+  i: VAR DTIME 
+
+  valid_bag? (i)(a: ARR_PRODUCT): bool =
+    ( FORALL (m : dom(a)) : member((a@@m)`p, products(i)) )
+    AND
+    ( FORALL (m, n: dom(a)) : m /= n => (a@@m)`p /= (a@@n)`p )
+    AND
+    ( FORALL (m : dom(a)) : 0 <= (a@@m)`q ) 
+
+  array2bag (i) : [(valid_bag?(i)) -> bag[PRODUCT]]
+
+  a : VAR ARR_PRODUCT
+
+  x : VAR PRODUCT
+
+  singleton?(a) : bool = (EXISTS (x: ARR_PRODUCT ): (FORALL (y: ARR_PRODUCT): x = y))
+ 
+
+  bag_occ : AXIOM
+     valid_bag?(i)(a)
+  => x # array2bag(i)(a) = occ (x, a)
+
+  occ_lookup : AXIOM
+     valid_bag?(i)(a)
+  => FORALL (m : dom(a)): 
+        (a@@m)`q >= 1 => 
+          occ ( (a@@m)`p, a ) >= 1
+  
+
+END array2bag 
+
+$$$ft-invoicev2.pvs
+Invoicev2: THEORY
+BEGIN
+  delta: posreal % sampling time
+  %IMPORTING Time[delta]
+  IMPORTING number_fields
+  IMPORTING structures@bags
+  IMPORTING array2bag
+
+
+  
+
+% Types
+   n : TYPE+ = {id : nat |  id <= 10000} % check here
+   orders_n : TYPE+ = {id : posnat |  id <= 10000} % check here
+   product: TYPE
+   e : set[PRODUCT] = emptyset
+   status : type+= { ok , pd_empty , ins_db, p_notDB , qty_pos, id_full , c_ntempty, p_invalid, p_dupli , nots_instock , id_inv , id_invalid}
+   state : type+ = { pending , invoiced}
+
+
+
+% abstract varaible
+ STATE : TYPE =
+ [#     report : status
+	,id : n
+	,products : set[PRODUCT]
+	,stock : bag[(products)] 
+	,orders: set[orders_n]
+	,carts :  [ (orders) -> bag[(products)] ] 
+	,order_state : [ (orders) -> state]
+ #]
+ st : VAR [ DTIME -> STATE ]
+
+% helper function
+emptyfun [T, U : TYPE] (x : {x : T | FALSE}) : RECURSIVE U = 
+    emptyfun(x) 
+    MEASURE (LAMBDA (x : {x : T | FALSE}): 1)
+
+int_state :  STATE =
+	  (#
+		report := ok
+		,id := 0
+		,products := emptyset
+		,stock := emptybag
+		,orders:= emptyset
+		,carts := emptyfun
+		,order_state := emptyfun
+	  #)
+
+
+ 
+
+% 
+    
+% opetrations
+       
+ subtract [D : TYPE, R : TYPE]
+       (f : [D -> R], x : D)
+       (y : { y : D | y /= x }) : R = f( y )
+
+% Monitored Events
+
+COMMAND : DATATYPE
+    BEGIN
+      nothing                                                        :isNothing?
+      add_types(product_id: PRODUCT)                                 :isAdd_type?
+      add_product(a_product: PRODUCT , quantity: integer)            :isAdd_product? 
+      %add_order (a_order:  set[ [PRODUCT -> integer] ]  ) 	     :isAdd_order? 
+      invoice(order_id: orders_n)			             :isInvoice? % check here with orders_n
+      cancel_order(order_id: orders_n)                               :isCancel_order?
+      add_order (a_order: ARR_PRODUCT  )                             :is_Add_order??
+    END COMMAND 
+  cmd: VAR [DTIME -> COMMAND]
+
+%======================================================================================================================
+empty_string(product_id : PRODUCT) : bool =
+member(singleton(product_id),e)
+
+orders_bagp_have_same_types (product_id : PRODUCT)(st) (i :POS_DTIME) : bool =
+FORALL (x1: (st(i - 1)`orders), x: PRODUCT):  st(i - 1)`products(x) IFF union[PRODUCT] (singleton[PRODUCT](product_id),  st(i - 1)`products) (x)
+
+add_types (product_id : PRODUCT) (st) (i : POS_DTIME) : bool =
+  cond
+		
+	not products_(product_id) and 	not  empty_string(product_id)  -> orders_bagp_have_same_types (product_id)(st) (i) and
+												st(i) =  st(i-1) with [       report := ok,
+													products := union(singleton(product_id),products_),
+													stock := stock_ with [ product_id := 0 ] 
+	    			     	      	      	                                        ],
+         products_(product_id) or   empty_string(product_id)   ->
+							         cond		
+									 empty_string(product_id)  -> st(i) = st(i-1) with [ report := pd_empty],  % prd is empty string 					
+	                                                                 products_(product_id)  -> st(i) = st(i-1) with [ report := ins_db]  % prd already in db
+								 endcond
+  endcond
+  where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+%===========================================================================================
+
+ 
+
+ add_product(a_product: PRODUCT , quantity: integer) (st) (i :POS_DTIME) : bool =
+  cond
+      
+	   	quantity > 0  ->  cond		
+					 products_(a_product) -> st(i) = st(i-1) with [ stock := stock_ with [ a_product := quantity] , report := ok],
+					 not products_(a_product) ->  st(i) = st(i-1) with [ report := p_notDB]  % products not in db
+	 		      	  endcond,
+		
+		     	 		             
+	        quantity <= 0  ->  st(i) = st(i-1) with [ report := qty_pos]  % quantity must be positive
+		     	 
+  endcond
+  where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+%===============================================================================================
+no_more_id(st) (i : DTIME) : bool =
+forall ( id : orders_n) : st(i) `orders(id)
+
+products_valid ( i:DTIME) (a : ARR_PRODUCT) : bool =
+FORALL (m : dom(a)) : member((a@@m)`p, products(i))
+
+no_products_dup ( i:DTIME) (a : ARR_PRODUCT) : bool =
+FORALL (m, n: dom(a)) : m /= n => (a@@m)`p /= (a@@n)`p
+
+quantity_pos ( i:DTIME) (a : ARR_PRODUCT) : bool =
+FORALL (m : dom(a)) : 0 <= (a@@m)`q 
+
+
+enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
+ forall ( prod :PRODUCT) :  st(i)`products(prod)  =>   ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
+
+
+
+
+%singleton?[ARR_PRODUCT](valid_bag?(i - 1))
+%get_bag (i : DTIME)  : bag[PRODUCT] =  (array2bag (i-1) (valid_bag?(i-1) ))
+
+ add_order (a_order: ARR_PRODUCT  ) (st) ( i :POS_DTIME) : bool =
+  cond
+  not no_more_id(st)(i-1)  ->
+			     cond
+				a_order `size  >  0 -> 
+					cond
+						 valid_bag?(i-1) (a_order) ->
+						 		 	   
+									  %forall( n : nat, t  : TUPLE , p : PRODUCT) :
+									  %a_order `content(n)(t)(p)   and products_(p) and
+									   
+						                           cond
+						 		 	            enough_stock( array2bag (i-1) (valid_bag?(i-1)) )(st)(i-1) ->
+										     		  	    	  		    	         forall(prod: PRODUCT) :
+								     										 exists(new_id : orders_n): % generate new id
+																		 %singleton?[ARR_PRODUCT](valid_bag?(i - 1)) and
+								     										 products_(prod) and
+								     										 not orders_(new_id) and
+								    										  st(i) = st(i-1) with [
+																	          report := ok,
+											   						          id := new_id,
+											                             stock := stock_ with [ prod := (stock_(prod)) -  array2bag (i-1) (valid_bag?(i-1)) (prod)],
+											   				                           orders := union(singleton(new_id),orders_),
+											    			     carts := carts_ with [ new_id :=  array2bag (i-1) (valid_bag?(i-1))],
+											    							 order_state := order_state_ with [ new_id := pending ]
+								     	     	     	  ],
+									not enough_stock ( array2bag (i-1) (valid_bag?(i-1)) )(st)(i-1) ->  st(i) = st(i-1) with [ report := nots_instock ] % not enough in stock
+									   endcond,
+						 not valid_bag?(i-1) (a_order) ->
+						     cond
+						        not quantity_pos (i-1) (a_order) ->  st(i) = st(i-1) with [ report := qty_pos ], % quantity must be positive
+
+                                                        quantity_pos (i-1) (a_order)->
+							cond	
+							  not products_valid (i-1) (a_order) ->  st(i) = st(i-1) with [ report := p_invalid ], % some product is not valid
+
+                                                           products_valid (i-1) (a_order) ->
+								   cond
+								      not no_products_dup (i-1) (a_order) -> st(i) = st(i-1) with [ report := p_dupli ]  % duplicate products
+		                			           endcond
+
+							endcond
+						 
+						     endcond
+					endcond,
+				
+			        not a_order `size  >  0  ->  st(i) = st(i-1) with [ report := c_ntempty] % cart must be non empty
+			     endcond,
+  no_more_id(st)(i-1) ->  st(i) = st(i-1) with [ report := id_full] %  no id are avalibe
+  
+  
+  endcond
+   where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+
+%===================================================================================================================================
+
+
+  % add_order (a_order:  bag[PRODUCT]  ) (st) ( i :POS_DTIME) : bool =
+   %cond
+	%add_order_ok(a_order)(st)(i-1) and not no_more_id(st)  (i-1) ->
+								    
+								    % forall(prod: PRODUCT) :
+								     %exists(new_id : orders_n): % generate new id
+								     %products_(prod) and
+								     %not orders_(new_id) and
+								     %st(i) = st(i-1) with [
+											    %report := ok,
+											    %id := new_id,
+											    %stock := stock_ with [ prod := (stock_(prod)) - a_order(prod)],
+											    %orders := union(singleton(new_id),orders_),
+											    %carts := carts_ with [ new_id := a_order],
+											    %order_state := order_state_ with [ new_id := pending ]
+								     	     	     	  %],
+       %else -> st(i) = st(i -1) with [ report := error]
+								     
+
+   %endcond
+    %where
+	%report_ = st(i-1) `report
+	%,id_ = st(i-1) `id
+	%,products_ = st(i-1) `products
+	%,stock_ = st(i-1)   `stock
+	%,orders_ = st(i-1) `orders
+	%,carts_ = st(i-1) `carts
+	%,order_state_ = st(i-1) `order_state
+%==============================================================================================================
+
+
+invoice(order_id: orders_n)  (st) ( i :POS_DTIME) : bool =
+   cond
+	orders_(order_id) ->
+				cond
+				order_state_(order_id) = pending ->     st(i) = st(i-1) with [
+				                                        report := ok,
+								        order_state := order_state_ with [ order_id := invoiced]
+	                  						] ,
+			         order_state_(order_id) = invoiced  -> st(i) = st(i-1) with [report := id_inv]  % already invoiced
+				
+				endcond,
+	not orders_(order_id) ->  st(i) = st(i-1) with [report := id_invalid]	% order id not valid		
+
+
+   endcond
+   where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+
+%==========================================================================================================================
+
+cancel_order(order_id: orders_n) (st) ( i :POS_DTIME) : bool =
+  cond
+	orders_(order_id) ->	
+				  forall(prod: PRODUCT) :
+				  products_(prod) and
+				                         st(i) = st(i-1) with
+							 [
+						         report := ok,
+							 stock := stock_ with [ prod := (stock_(prod)) +  carts_(order_id)(prod) ],
+							 orders := remove(order_id,orders_),
+							 carts := subtract(carts_,order_id),
+							 order_state := subtract(order_state_,order_id)
+							  ],
+	not orders_(order_id) -> st(i) = st(i-1) with [ report := id_invalid]  % order id not valid
+  endcond
+   where
+	report_ = st(i-1) `report
+	,id_ = st(i-1) `id
+	,products_ = st(i-1) `products
+	,stock_ = st(i-1)   `stock
+	,orders_ = st(i-1) `orders
+	,carts_ = st(i-1) `carts
+	,order_state_ = st(i-1) `order_state
+%=====================================================================================================
+
+    nothing (st) (i : POS_DTIME) : bool =
+    st(i) = st(i-1)
+
+%====================================================================================================
+
+	Invoice_ftn (cmd) (product_id : PRODUCT , quantity: integer, a_order: ARR_PRODUCT ,order_id: orders_n )(st)   (i : DTIME) : bool =
+	cond
+		i = 0 -> st(0) = int_state,
+
+
+		i > 0 -> cases cmd(i) of 
+			 add_types (product_id)  :  add_types(product_id) (st) (i), 
+		      	 add_product (product_id,quantity) :  add_product(product_id,quantity) (st) (i),
+			 add_order (a_order )   : add_order (a_order ) (st) ( i), 
+			 invoice (order_id)   : invoice (order_id)  (st) ( i) ,
+			 cancel_order (order_id)    : cancel_order(order_id) (st) ( i),
+			 nothing   : nothing (st) (i)
+			 endcases
+			  
+		         
+		 
+	endcond
+    
+END Invoicev2
+
+$$$ft-invoicev2.prf
 (Invoicev2
  (n_TCC1 0
   (n_TCC1-1 nil 3626314725
@@ -458,19 +1040,6 @@
    nil))
  (add_order_TCC4 0
   (add_order_TCC4-1 nil 3626314725 ("" (subtype-tcc) nil nil)
-   ((@@ const-decl "TUPLE" array2bag nil)
-    (member const-decl "bool" sets nil)
-    (/= const-decl "boolean" notequal nil)
-    (valid_bag? const-decl "bool" array2bag nil)
-    (singleton_elt const-decl "T" sets nil)
-    (enough_stock const-decl "bool" Invoicev2 nil)
-    (no_more_id const-decl "bool" Invoicev2 nil)
-    (singleton const-decl "(singleton?)" sets nil)
-    (union const-decl "set" sets nil)
-    (int_minus_int_is_int application-judgement "int" integers nil))
-   nil))
- (add_order_TCC5 0
-  (add_order_TCC5-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -505,8 +1074,8 @@
     (no_more_id const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC6 0
-  (add_order_TCC6-1 nil 3626314725 ("" (cond-coverage-tcc) nil nil)
+ (add_order_TCC5 0
+  (add_order_TCC5-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -548,8 +1117,8 @@
     (no_more_id const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC7 0
-  (add_order_TCC7-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC6 0
+  (add_order_TCC6-1 nil 3626314725 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -582,8 +1151,8 @@
     (enough_stock const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC8 0
-  (add_order_TCC8-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC7 0
+  (add_order_TCC7-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -619,8 +1188,8 @@
     (no_products_dup const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC9 0
-  (add_order_TCC9-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC8 0
+  (add_order_TCC8-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -653,8 +1222,8 @@
     (products_valid const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC10 0
-  (add_order_TCC10-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC9 0
+  (add_order_TCC9-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -686,8 +1255,8 @@
     (quantity_pos const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC11 0
-  (add_order_TCC11-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC10 0
+  (add_order_TCC10-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -720,8 +1289,8 @@
     (valid_bag? const-decl "bool" array2bag nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC12 0
-  (add_order_TCC12-1 nil 3626373067 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC11 0
+  (add_order_TCC11-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -748,8 +1317,8 @@
     (no_more_id const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC13 0
-  (add_order_TCC13-1 nil 3626425979 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC12 0
+  (add_order_TCC12-1 nil 3626373067 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
