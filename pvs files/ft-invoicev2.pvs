@@ -140,8 +140,8 @@ FORALL (m, n: dom(a)) : m /= n => (a@@m)`p /= (a@@n)`p
 quantity_pos ( i:DTIME) (a : ARR_PRODUCT) : bool =
 FORALL (m : dom(a)) : 0 <= (a@@m)`q 
 
-enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : POS_DTIME) : bool =
- forall ( prod :PRODUCT) :  st(i)`products(prod) and singleton?[ARR_PRODUCT](valid_bag?(i - 1)) =>  ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
+enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
+ forall ( prod :PRODUCT) :  st(i)`products(prod)  =>  ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
 
 
 
