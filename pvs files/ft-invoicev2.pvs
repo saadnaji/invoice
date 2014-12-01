@@ -24,9 +24,9 @@ BEGIN
  [#     report : status
 	,id : n
 	,products : set[PRODUCT]
-	,stock : bag[PRODUCT] 
+	,stock : bag[(products)] 
 	,orders: set[orders_n]
-	,carts :  [ (orders) -> bag[PRODUCT] ] 
+	,carts :  [ (orders) -> bag[(products)] ] 
 	,order_state : [ (orders) -> state]
  #]
  st : VAR [ DTIME -> STATE ]
@@ -76,11 +76,16 @@ COMMAND : DATATYPE
 empty_string(product_id : PRODUCT) : bool =
 member(singleton(product_id),e)
 
+orders_bagp_have_same_types (product_id : PRODUCT)(st) (i :POS_DTIME) : bool =
+FORALL (x1: (st(i - 1)`orders), x: PRODUCT):  st(i - 1)`products(x) IFF union[PRODUCT] (singleton[PRODUCT](product_id),  st(i - 1)`products) (x)
+
 add_types (product_id : PRODUCT) (st) (i : POS_DTIME) : bool =
   cond
 		
-	not products_(product_id) and 	not  empty_string(product_id)  -> st(i) =  st(i-1) with [       report := ok,
-													products := union(singleton(product_id),products_)
+	not products_(product_id) and 	not  empty_string(product_id)  -> orders_bagp_have_same_types (product_id)(st) (i) and
+												st(i) =  st(i-1) with [       report := ok,
+													products := union(singleton(product_id),products_),
+													stock := stock_ with [ product_id := 0 ] 
 	    			     	      	      	                                        ],
          products_(product_id) or   empty_string(product_id)   ->
 							         cond		
@@ -135,10 +140,12 @@ FORALL (m, n: dom(a)) : m /= n => (a@@m)`p /= (a@@n)`p
 quantity_pos ( i:DTIME) (a : ARR_PRODUCT) : bool =
 FORALL (m : dom(a)) : 0 <= (a@@m)`q 
 
-enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
- forall ( prod :PRODUCT) :  st(i)`products(prod) => ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
+enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : POS_DTIME) : bool =
+ forall ( prod :PRODUCT) :  st(i)`products(prod) and singleton?[ARR_PRODUCT](valid_bag?(i - 1)) =>  ( st(i) `stock (prod) - a_order(prod) >= 0) % check here
 
 
+
+%singleton?[ARR_PRODUCT](valid_bag?(i - 1))
 %get_bag (i : DTIME)  : bag[PRODUCT] =  (array2bag (i-1) (valid_bag?(i-1) ))
 
  add_order (a_order: ARR_PRODUCT  ) (st) ( i :POS_DTIME) : bool =
@@ -149,13 +156,14 @@ enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
 					cond
 						 valid_bag?(i-1) (a_order) ->
 						 		 	   
-									  forall( n : nat, t  : TUPLE , p : PRODUCT) :
-									  a_order `content(n)(t)(p)   and products_(p) and
+									  %forall( n : nat, t  : TUPLE , p : PRODUCT) :
+									  %a_order `content(n)(t)(p)   and products_(p) and
 									   
 						                           cond
 						 		 	            enough_stock( array2bag (i-1) (valid_bag?(i-1)) )(st)(i-1) ->
 										     		  	    	  		    	         forall(prod: PRODUCT) :
 								     										 exists(new_id : orders_n): % generate new id
+																		 %singleton?[ARR_PRODUCT](valid_bag?(i - 1)) and
 								     										 products_(prod) and
 								     										 not orders_(new_id) and
 								    										  st(i) = st(i-1) with [
@@ -180,7 +188,7 @@ enough_stock  (a_order:  bag[PRODUCT] ) (st)  ( i : DTIME) : bool =
 								   cond
 								      not no_products_dup (i-1) (a_order) -> st(i) = st(i-1) with [ report := msg8 ]  % duplicate products
 		                			           endcond
-									
+
 							endcond
 						 
 						     endcond
