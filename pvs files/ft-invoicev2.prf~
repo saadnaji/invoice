@@ -459,20 +459,6 @@
    nil))
  (add_order_TCC4 0
   (add_order_TCC4-1 nil 3626314725 ("" (subtype-tcc) nil nil)
-   ((@@ const-decl "TUPLE" array2bag nil)
-    (member const-decl "bool" sets nil)
-    (/= const-decl "boolean" notequal nil)
-    (valid_bag? const-decl "bool" array2bag nil)
-    (singleton_elt const-decl "T" sets nil)
-    (enough_stock const-decl "bool" Invoicev2 nil)
-    (full? const-decl "bool" sets nil)
-    (no_more_id const-decl "bool" Invoicev2 nil)
-    (singleton const-decl "(singleton?)" sets nil)
-    (union const-decl "set" sets nil)
-    (int_minus_int_is_int application-judgement "int" integers nil))
-   nil))
- (add_order_TCC5 0
-  (add_order_TCC5-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -508,8 +494,8 @@
     (no_more_id const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC6 0
-  (add_order_TCC6-1 nil 3626314725 ("" (cond-coverage-tcc) nil nil)
+ (add_order_TCC5 0
+  (add_order_TCC5-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -552,8 +538,8 @@
     (no_more_id const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC7 0
-  (add_order_TCC7-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC6 0
+  (add_order_TCC6-1 nil 3626314725 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -587,8 +573,8 @@
     (enough_stock const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC8 0
-  (add_order_TCC8-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC7 0
+  (add_order_TCC7-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -625,8 +611,8 @@
     (no_products_dup const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC9 0
-  (add_order_TCC9-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC8 0
+  (add_order_TCC8-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -660,8 +646,8 @@
     (products_valid const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC10 0
-  (add_order_TCC10-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC9 0
+  (add_order_TCC9-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -694,8 +680,8 @@
     (quantity_pos const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC11 0
-  (add_order_TCC11-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC10 0
+  (add_order_TCC10-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -729,8 +715,8 @@
     (valid_bag? const-decl "bool" array2bag nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC12 0
-  (add_order_TCC12-1 nil 3626373067 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC11 0
+  (add_order_TCC11-1 nil 3626314725 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -759,8 +745,8 @@
     (no_more_id const-decl "bool" Invoicev2 nil)
     (int_minus_int_is_int application-judgement "int" integers nil))
    nil))
- (add_order_TCC13 0
-  (add_order_TCC13-1 nil 3626377865 ("" (cond-disjoint-tcc) nil nil)
+ (add_order_TCC12 0
+  (add_order_TCC12-1 nil 3626373067 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)

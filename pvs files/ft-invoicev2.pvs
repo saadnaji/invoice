@@ -129,7 +129,7 @@ add_types (product_id : PRODUCT) (st) (i : POS_DTIME) : bool =
 
 %===============================================================================================
 no_more_id(st) (i : DTIME) : bool =
-full?(st(i) `orders) % check here
+forall ( id : orders_n) : st(i) `orders(id)
 
 products_valid ( i:DTIME) (a : ARR_PRODUCT) : bool =
 FORALL (m : dom(a)) : member((a@@m)`p, products(i))
