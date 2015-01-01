@@ -74,6 +74,10 @@ system invoice
     -- items are returned to stock
     
     -- order_id is freed up
+    
+### More information
+
+For more information about the system under description check report.pdf.
 
 ### Software
 
@@ -81,7 +85,6 @@ Dillinger is currently extended with the following plugins
 
 * Eiffel
 * PVS
-
 
 
 
