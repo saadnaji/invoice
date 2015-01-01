@@ -33,25 +33,16 @@ produce a safe and correct systemâ€”one that fulfills the needs of the customerâ
 nothing more. At the same time the specification must not over-constrain developers
 by venturing into design and implementation detail.
 
-Dillinger uses a number of open source projects to work properly:
-
-* [AngularJS] - HTML enhanced for web apps!
-* [Ace Editor] - awesome web-based text editor
-* [Marked] - a super fast port of Markdown to JavaScript
-* [Twitter Bootstrap] - great UI boilerplate for modern web apps
-* [node.js] - evented I/O for the backend
-* [Express] - fast node.js network app framework [@tjholowaychuk]
-* [Gulp] - the streaming build system
-* [keymaster.js] - awesome keyboard handler lib by [@thomasfuchs]
-* [jQuery] - duh
 
 ### Grammar specification of input commands
 invoice_definitions.txt
 
 system invoice
-* nothing 
 
-    --skip
+* nothing 
+  
+  --skip
+
 * add_type(product_id: STRING)
 
     -- e.g. add("nuts")
