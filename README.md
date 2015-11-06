@@ -12,7 +12,6 @@ formal methods strive to provide for computer-based systems (digital-hardware / 
 * the ability to clearly define when an implementation meets the specification (“correctness”), and
 * the ability to understand the specification and the implementation better through “calculations”.
 
-Source :G. Gopalakrishnan.
 
 ### Requirements elicitation
 
