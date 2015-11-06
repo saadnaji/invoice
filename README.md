@@ -85,7 +85,7 @@ system invoice
     
 ### More information
 
-For more information such as function tables, use cased  about the system (invoice) under description check report.pdf [Named Link] (http://www.google.fr/) .
+For more information such as function tables, use cased  about the system (invoice) under description check [report.pdf] (https://github.com/saadnaji/invoice/blob/master/report.pdf) .
 
 ### Software
 
