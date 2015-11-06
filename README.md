@@ -91,7 +91,7 @@ For more information such as function tables, use cased  about the system (invoi
 
 The system was developed under the following tools:
 
-* Eiffel . Used implement invoice.
+* Eiffel language . Used implement invoice.
 * PVS. Used to design formal specification and verifying invoice.
 
 
