@@ -85,7 +85,7 @@ system invoice
     
 ### More information
 
-For more information about the system under description check report.pdf.
+For more information such as function tables, use cased  about the system (invoice) under description check report.pdf [Named Link] (http://www.google.fr/) .
 
 ### Software
 
