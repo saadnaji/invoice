@@ -89,10 +89,10 @@ For more information such as function tables, use cased  about the system (invoi
 
 ### Software
 
-Dillinger is currently extended with the following plugins
+The system was developed under the following tools:
 
-* Eiffel
-* PVS
+* Eiffel . Used implement invoice.
+* PVS. Used to design formal specification and verifying invoice.
 
 
 
